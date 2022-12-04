@@ -37,13 +37,13 @@ class Post(models.Model):
         related_name='posts',
         verbose_name='Группа',
     )
-    # Поле для картинки (необязательное) 
+    # Поле для картинки (необязательное)
     image = models.ImageField(
         'Картинка',
         upload_to='posts/',
         blank=True
-    )  
-    # Аргумент upload_to указывает директорию, 
+    )
+    # Аргумент upload_to указывает директорию,
     # в которую будут загружаться пользовательские файлы.
 
     class Meta:
