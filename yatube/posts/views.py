@@ -120,7 +120,7 @@ def page_not_found(request, exception):
     # выводить её в шаблон пользовательской страницы 404 мы не станем
     return render(
         request,
-        'posts/404.html',
+        'core/404.html',
         {'path': request.path}, status=404)
 
 
