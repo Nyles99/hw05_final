@@ -141,7 +141,10 @@ def csrf_failure(request, reason=''):
 
 
 def server_error(request):
-    return render(request, "/500.html", status=500)
+    context = {}
+    response = render(request, 'core/500.html', context=context)
+    response.status_code = 500
+    return response
 
 
 @login_required
