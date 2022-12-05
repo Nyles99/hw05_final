@@ -140,6 +140,10 @@ def csrf_failure(request, reason=''):
     return render(request, 'core/403csrf.html')
 
 
+def server_error(request):
+    return render(request, "/500.html", status=500)
+
+
 @login_required
 def follow_index(request):
     list_of_posts = Post.objects.filter(author__following__user=request.user)
