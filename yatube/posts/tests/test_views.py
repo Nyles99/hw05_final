@@ -4,7 +4,7 @@ import tempfile
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django import forms
-from posts.models import Group, Post, User
+from posts.models import Group, Post, User, Follow
 from django.core.cache import cache
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -174,6 +174,46 @@ class PostModelTest(TestCase):
                     response.context.get('page_obj')
                 )
 
+    def test_authorised_user_subscribe(self):
+        self.authorized_client.get(
+            reverse('posts:profile_follow', kwargs={'username': 'auth'})
+        )
+        self.assertTrue(
+            Follow.objects.filter(user=self.user,
+                                  author=self.post_author).exists()
+        )
+
+    def test_authorised_user_subscribe(self):
+        self.authorized_client.get(
+            reverse('posts:profile_follow', kwargs={'username': 'auth'})
+        )
+        self.authorized_client.get(
+            reverse('posts:profile_unfollow', kwargs={'username': 'auth'})
+        )
+        self.assertFalse(
+            Follow.objects.filter(user=self.user,
+                                  author=self.post_author).exists()
+        )
+
+    def test_new_post_appears_on_subscriber_page(self):
+        self.subscribed_user = User.objects.create_user(username='new_user')
+        self.subscribed_client = Client()
+        self.subscribed_client.force_login(self.subscribed_user)
+        self.subscribed_client.get(
+            reverse('posts:profile_follow', kwargs={'username': 'auth'})
+        )
+        post = Post.objects.create(
+            text='Test post',
+            author=self.post_author,
+            group=self.test_group
+        )
+        response = self.subscribed_client.get(reverse('posts:follow_index'))
+        object_list = response.context.get('page_obj')
+        self.assertIn(post, object_list)
+        response = self.authorized_client.get(reverse('posts:follow_index'))
+        object_list = response.context.get('page_obj')
+        self.assertNotIn(post, object_list)
+
 
 class PaginatorViewsTest(TestCase):
     # Здесь создаются фикстуры: клиент и 13 тестовых записей.
@@ -244,3 +284,4 @@ class PaginatorViewsTest(TestCase):
             'posts:profile',
             kwargs={'username': f'{self.user.username}'}) + '?page=2')
         self.assertEqual(len(response.context['page_obj']), 3)
+

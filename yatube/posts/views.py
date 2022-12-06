@@ -151,10 +151,10 @@ def server_error(request):
 def follow_index(request):
     list_of_posts = Post.objects.filter(author__following__user=request.user)
     paginator = Paginator(list_of_posts, 20)
-    page_namber = request.GET.get('page')
+    page_namber = request.GET.get('page_obj')
     page = paginator.get_page(page_namber)
-    context = {'page': page}
-    return render(request, 'follow.html', context)
+    context = {'page_obj': page}
+    return render(request, 'posts/follow.html', context)
 
 
 @login_required
