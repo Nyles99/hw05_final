@@ -205,7 +205,7 @@ class PostModelTest(TestCase):
         post = Post.objects.create(
             text='Test post',
             author=self.user,
-            group=self.test_group
+            group=self.group
         )
         response = self.subscribed_client.get(reverse('posts:follow_index'))
         object_list = response.context.get('page_obj')
