@@ -179,8 +179,7 @@ class PostModelTest(TestCase):
             reverse('posts:profile_follow', kwargs={'username': 'auth'})
         )
         self.assertTrue(
-            Follow.objects.filter(user=self.user,
-                                  author=self.author).exists()
+            Follow.objects.filter(user=self.user).exists()
         )
 
     def test_authorised_user_subscribe(self):
