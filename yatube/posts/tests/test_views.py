@@ -284,4 +284,3 @@ class PaginatorViewsTest(TestCase):
             'posts:profile',
             kwargs={'username': f'{self.user.username}'}) + '?page=2')
         self.assertEqual(len(response.context['page_obj']), 3)
-
