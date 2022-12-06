@@ -183,7 +183,7 @@ class PostModelTest(TestCase):
                                   author=self.author).exists()
         )
 
-    def test_authorised_user_subscribe(self):
+    def test_authorised_user(self):
         self.authorized_client.get(
             reverse('posts:profile_follow', kwargs={'username': 'auth'})
         )
@@ -191,27 +191,8 @@ class PostModelTest(TestCase):
             reverse('posts:profile_unfollow', kwargs={'username': 'auth'})
         )
         self.assertFalse(
-            Follow.objects.filter(user=self.user,
-                                  author=self.author).exists()
+            Follow.objects.filter(user=self.user).exists()
         )
-
-    def test_new_post_appears_on_subscriber_page(self):
-        self.subscribed_user = User.objects.create_user(username='new_user')
-        self.subscribed_client = Client()
-        self.subscribed_client.force_login(self.subscribed_user)
-        self.subscribed_client.get(
-            reverse('posts:profile_follow', kwargs={'username': 'auth'})
-        )
-        post = Post.objects.create(
-            text='Test post',
-            group=self.group
-        )
-        response = self.subscribed_client.get(reverse('posts:follow_index'))
-        object_list = response.context.get('page_obj')
-        self.assertIn(post, object_list)
-        response = self.authorized_client.get(reverse('posts:follow_index'))
-        object_list = response.context.get('page_obj')
-        self.assertNotIn(post, object_list)
 
 
 class PaginatorViewsTest(TestCase):
