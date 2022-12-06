@@ -191,8 +191,7 @@ class PostModelTest(TestCase):
             reverse('posts:profile_unfollow', kwargs={'username': 'auth'})
         )
         self.assertFalse(
-            Follow.objects.filter(user=self.user,
-                                  author=self.author).exists()
+            Follow.objects.filter(user=self.user).exists()
         )
 
     def test_new_post_appears_on_subscriber_page(self):
