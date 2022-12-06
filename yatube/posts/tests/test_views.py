@@ -180,7 +180,7 @@ class PostModelTest(TestCase):
         )
         self.assertTrue(
             Follow.objects.filter(user=self.user,
-                                  author=self.post_author).exists()
+                                  author=self.author).exists()
         )
 
     def test_authorised_user_subscribe(self):
@@ -192,7 +192,7 @@ class PostModelTest(TestCase):
         )
         self.assertFalse(
             Follow.objects.filter(user=self.user,
-                                  author=self.post_author).exists()
+                                  author=self.author).exists()
         )
 
     def test_new_post_appears_on_subscriber_page(self):
@@ -204,7 +204,7 @@ class PostModelTest(TestCase):
         )
         post = Post.objects.create(
             text='Test post',
-            author=self.post_author,
+            author=self.author,
             group=self.test_group
         )
         response = self.subscribed_client.get(reverse('posts:follow_index'))
