@@ -179,7 +179,8 @@ class PostModelTest(TestCase):
             reverse('posts:profile_follow', kwargs={'username': 'auth'})
         )
         self.assertTrue(
-            Follow.objects.filter(user=self.user).exists()
+            Follow.objects.filter(user=self.user,
+                                  author=self.author).exists()
         )
 
     def test_authorised_user_subscribe(self):
@@ -190,7 +191,8 @@ class PostModelTest(TestCase):
             reverse('posts:profile_unfollow', kwargs={'username': 'auth'})
         )
         self.assertFalse(
-            Follow.objects.filter(user=self.user).exists()
+            Follow.objects.filter(user=self.user,
+                                  author=self.author).exists()
         )
 
     def test_new_post_appears_on_subscriber_page(self):
@@ -202,7 +204,7 @@ class PostModelTest(TestCase):
         )
         post = Post.objects.create(
             text='Test post',
-            author=self.author,
+            author=self.user,
             group=self.test_group
         )
         response = self.subscribed_client.get(reverse('posts:follow_index'))
