@@ -8,6 +8,12 @@ from django.views.decorators.cache import cache_page
 from django.urls import reverse
 
 
+def paginator(request, post_list):
+    paginator_obj = Paginator(post_list, 10)
+    page_number = request.GET.get('page')
+    return paginator_obj.get_page(page_number)
+
+
 @cache_page(60 * 20)
 def index(request):
     ''' Главная страница'''
@@ -15,11 +21,7 @@ def index(request):
     # в переменную posts будет сохранена выборка из 10 объектов модели Post,
     # отсортированных по полю pub_date по убыванию
     posts = Post.objects.all()
-    paginator = Paginator(posts, 10)
-    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
-    page_number = request.GET.get('page')
-    # Получаем набор записей для страницы с запрошенным номером
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator(request, posts)
     # В словаре context отправляем информацию в шаблон
     context = {
         'posts': posts,
@@ -34,11 +36,7 @@ def group_posts(request, slug):
     posts = group.posts.all()
     template = 'posts/group_list.html'
     title = 'Здесь будет информация о группах проекта Yatube'
-    paginator = Paginator(posts, 10)
-    # Из URL извлекаем номер запрошенной страницы - это значение параметра page
-    page_number = request.GET.get('page')
-    # Получаем набор записей для страницы с запрошенным номером
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator(request, posts)
     # В словаре context отправляем информацию в шаблон
     context = {
         'title': title,
@@ -53,9 +51,7 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     posts = author.posts.all()
     counter = posts.count()
-    paginator = Paginator(posts, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator(request, posts)
     if request.user.is_authenticated:
         following = Follow.objects.filter(
             user=request.user, author=author
@@ -105,9 +101,8 @@ def post_edit(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     author = post.author
     form = PostForm(request.POST, instance=post)
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
+    if request.method == 'POST' and form.is_valid():
+        form.save()
         return redirect('posts:post_detail', post_id=post.pk)
     return render(request, 'posts/post_create.html',
                   {'form': form, 'post': post, 'author': author,
@@ -159,11 +154,12 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
-    user = request.user
     author = User.objects.get(username=username)
-    is_follower = Follow.objects.filter(user=user, author=author)
-    if user != author and not is_follower.exists():
-        Follow.objects.create(user=user, author=author)
+    if request.user != author:
+        Follow.objects.get_or_create(
+            author=author,
+            user=request.user
+        )
     return redirect(reverse('posts:profile', args=[username]))
 
 
@@ -171,6 +167,5 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     is_follower = Follow.objects.filter(user=request.user, author=author)
-    if is_follower.exists():
-        is_follower.delete()
+    is_follower.delete()
     return redirect('posts:profile', username=author)
