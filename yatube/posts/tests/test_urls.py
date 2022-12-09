@@ -14,10 +14,6 @@ Post_1 = reverse('posts:post_detail', kwargs={'post_id': '1'})
 Post_404 = reverse('posts:post_detail', kwargs={'post_id': '404'})
 ABOUT_A = reverse('about:author')
 ABOUT_T = reverse('about:author')
-posts_comment = reverse(
-    'posts:add_comment',
-    kwargs={'post_id': 'self.post.pk'}
-)
 
 
 class PostModelTest(TestCase):
