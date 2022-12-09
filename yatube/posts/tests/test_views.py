@@ -193,25 +193,22 @@ class PostModelTest(TestCase):
             Follow.objects.filter(user=self.user).exists()
         )
 
-    def test_index_page_cache(self):
+    def test_cache(self):
+        """Тест кэша."""
+        post = Post.objects.create(
+            text='text',
+            author=self.user,
+            group=self.group
+        )
         response = self.authorized_client.get(reverse('posts:index'))
-        post = Post.objects.get(pk='1')
-        self.assertIn(
-            post,
-            list(response.context.get('page_obj').object_list)
-        )
+        response_post = response.context['page_obj'][0]
+        self.assertEqual(post, response_post)
         post.delete()
-        response_second = self.authorized_client.get(reverse('posts:index'))
-        self.assertIn(
-            post,
-            list(response_second.content.get('page_obj').object_list)
-        )
+        response_2 = self.authorized_client.get(reverse('posts:index'))
+        self.assertEqual(response.content, response_2.content)
         cache.clear()
-        response_third = self.authorized_client.get(reverse('posts:index'))
-        self.assertNotIn(
-            post,
-            list(response_third.context.get('page_obj').object_list)
-        )
+        response_3 = self.authorized_client.get(reverse('posts:index'))
+        self.assertNotEqual(response.content, response_3.content)
 
 
 class PaginatorViewsTest(TestCase):
