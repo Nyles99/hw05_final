@@ -4,6 +4,7 @@ from .models import Group, Post, User, Follow
 from posts.models import Post
 from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
 from django.core.cache import cache
 from django.urls import reverse
 
@@ -14,13 +15,16 @@ def paginator(request, post_list):
     return paginator_obj.get_page(page_number)
 
 
+@require_GET
 def index(request):
     ''' Главная страница'''
     # Одна строка вместо тысячи слов на SQL:
     # в переменную posts будет сохранена выборка из 10 объектов модели Post,
     # отсортированных по полю pub_date по убыванию
-    posts = Post.objects.all()
-    cache.set('posts:index', posts, timeout=20)
+    posts = cache.get('posts:index')
+    if posts is None:
+        posts = Post.objects.all()
+        cache.set('posts:index', posts, timeout=20)
     page_obj = paginator(request, posts)
     # В словаре context отправляем информацию в шаблон
     context = {
