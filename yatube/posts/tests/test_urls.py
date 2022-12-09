@@ -12,7 +12,7 @@ Edit_1 = reverse('posts:post_edit', kwargs={'post_id': '1'})
 GRoup = reverse('posts:group_list', kwargs={'slug': 'test-slug'})
 Post_1 = reverse('posts:post_detail', kwargs={'post_id': '1'})
 Post_404 = reverse('posts:post_detail', kwargs={'post_id': '404'})
-Comment1 = reverse('posts:add_comment', kwargs={'post_id': '1'})
+Comment1 = reverse('posts:comment', kwargs={'post_id': '1'})
 ABOUT_A = reverse('about:author')
 ABOUT_T = reverse('about:author')
 
