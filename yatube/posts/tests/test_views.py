@@ -193,6 +193,21 @@ class PostModelTest(TestCase):
             Follow.objects.filter(user=self.user).exists()
         )
 
+    def test_index_page_cache(self):
+        """Удаленный пост сохраняется в кеше главной страницы."""
+        post = Post.objects.create(
+            text='Test-cache',
+            author=self.post_author,
+            group=self.test_group
+        )
+        page_content = self.guest_client.get(reverse('posts:index')).content
+        post.delete()
+        cached_content = self.guest_client.get(reverse('posts:index')).content
+        self.assertEqual(page_content, cached_content)
+        cache.clear()
+        cleared_cache = self.guest_client.get(reverse('posts:index')).content
+        self.assertNotEqual(cached_content, cleared_cache)
+
 
 class PaginatorViewsTest(TestCase):
     # Здесь создаются фикстуры: клиент и 13 тестовых записей.
@@ -263,21 +278,6 @@ class PaginatorViewsTest(TestCase):
             'posts:profile',
             kwargs={'username': f'{self.user.username}'}) + '?page=2')
         self.assertEqual(len(response.context['page_obj']), 3)
-
-    def test_index_page_cache(self):
-        """Удаленный пост сохраняется в кеше главной страницы."""
-        post = Post.objects.create(
-            text='Test-cache',
-            author=self.post_author,
-            group=self.test_group
-        )
-        page_content = self.guest_client.get(reverse('posts:index')).content
-        post.delete()
-        cached_content = self.guest_client.get(reverse('posts:index')).content
-        self.assertEqual(page_content, cached_content)
-        cache.clear()
-        cleared_cache = self.guest_client.get(reverse('posts:index')).content
-        self.assertNotEqual(cached_content, cleared_cache)
 
 
 class FollowTests(TestCase):
