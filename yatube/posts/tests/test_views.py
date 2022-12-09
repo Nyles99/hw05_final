@@ -205,7 +205,7 @@ class PostModelTest(TestCase):
         self.assertIn(
             post,
             list(response_second.content.get("page_obj").object_list)
-        ) #КРАШИТСЯ ТУТ
+        )
         cache.clear()
         response_third = self.authorized_client.get(reverse('posts:index'))
         self.assertNotIn(
