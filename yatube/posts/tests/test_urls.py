@@ -70,7 +70,6 @@ class PostModelTest(TestCase):
             Profile: 'posts/profile.html',
             Post_1: 'posts/post_detail.html',
             Edit_1: 'posts/post_create.html',
-            posts_comment: f'/posts/{self.post.pk}/comment/',
         }
         for adress, template in template_about_urls_name.items():
             with self.subTest(adress=adress):
