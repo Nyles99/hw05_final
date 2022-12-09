@@ -306,6 +306,9 @@ class FollowTests(TestCase):
         self.client_auth_following.force_login(self.user_following)
 
         def test_follow_1(self):
-            tem = reverse('profile_follow', kwargs={'username': self.user_following.username})
+            tem = reverse(
+                'profile_follow',
+                kwargs={'username': self.user_following.username}
+            )
             self.client_auth_follower.get(tem)
             self.assertEqual(Follow.objects.all().count(), 1)
