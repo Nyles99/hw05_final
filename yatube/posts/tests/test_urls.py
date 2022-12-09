@@ -12,7 +12,6 @@ Edit_1 = reverse('posts:post_edit', kwargs={'post_id': '1'})
 GRoup = reverse('posts:group_list', kwargs={'slug': 'test-slug'})
 Post_1 = reverse('posts:post_detail', kwargs={'post_id': '1'})
 Post_404 = reverse('posts:post_detail', kwargs={'post_id': '404'})
-Comment1 = reverse('posts:comment')
 ABOUT_A = reverse('about:author')
 ABOUT_T = reverse('about:author')
 
@@ -57,7 +56,6 @@ class PostModelTest(TestCase):
             [Create, self.authorized_client, 200],
             [Post_404, self.guest_client, 404],
             [Post_404, self.authorized_client, 404],
-            [Comment1, self.authorized_client, 200],
         ]
         for url, client, status in urls_names:
             with self.subTest(url=url):
@@ -72,7 +70,6 @@ class PostModelTest(TestCase):
             Profile: 'posts/profile.html',
             Post_1: 'posts/post_detail.html',
             Edit_1: 'posts/post_create.html',
-            Comment1: 'includes/comment.html',
         }
         for adress, template in template_about_urls_name.items():
             with self.subTest(adress=adress):
