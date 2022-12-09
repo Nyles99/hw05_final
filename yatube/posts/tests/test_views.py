@@ -198,19 +198,19 @@ class PostModelTest(TestCase):
         post = Post.objects.get(pk='1')
         self.assertIn(
             post,
-            list(response.context.get("page_obj").object_list)
+            list(response.context.get('page_obj').object_list)
         )
         post.delete()
         response_second = self.authorized_client.get(reverse('posts:index'))
         self.assertIn(
             post,
-            list(response_second.content.get("page_obj").object_list)
+            list(response_second.content.get('page_obj').object_list)
         )
         cache.clear()
         response_third = self.authorized_client.get(reverse('posts:index'))
         self.assertNotIn(
             post,
-            list(response_third.context.get("page_obj").object_list)
+            list(response_third.context.get('page_obj').object_list)
         )
 
 
