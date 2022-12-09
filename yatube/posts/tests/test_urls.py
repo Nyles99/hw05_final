@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 
 from posts.models import Group, Post, User
-from django.urls import reverse
+from django.urls import reverse 
 
 User = get_user_model()
 Index = reverse('posts:index')
@@ -14,6 +14,7 @@ Post_1 = reverse('posts:post_detail', kwargs={'post_id': '1'})
 Post_404 = reverse('posts:post_detail', kwargs={'post_id': '404'})
 ABOUT_A = reverse('about:author')
 ABOUT_T = reverse('about:author')
+posts_comment = reverse('posts:add_comment', kwargs={'post_id': 'self.post.pk'})
 
 
 class PostModelTest(TestCase):
@@ -70,6 +71,7 @@ class PostModelTest(TestCase):
             Profile: 'posts/profile.html',
             Post_1: 'posts/post_detail.html',
             Edit_1: 'posts/post_create.html',
+            posts_comment: f'/posts/{self.post.pk}/comment/',
         }
         for adress, template in template_about_urls_name.items():
             with self.subTest(adress=adress):
