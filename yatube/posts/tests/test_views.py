@@ -194,19 +194,24 @@ class PostModelTest(TestCase):
         )
 
     def test_index_page_cache(self):
-        """Удаленный пост сохраняется в кеше главной страницы."""
-        post = Post.objects.create(
-            text='Test-cache',
-            author=self.post_author,
-            group=self.test_group
+        response = self.authorized_client.get(reverse('posts:index'))
+        post = Post.objects.get(pk='1')
+        self.assertIn(
+            post,
+            list(response.context.get("page_obj").object_list)
         )
-        page_content = self.guest_client.get(reverse('posts:index')).content
         post.delete()
-        cached_content = self.guest_client.get(reverse('posts:index')).content
-        self.assertEqual(page_content, cached_content)
+        response_second = self.authorized_client.get(reverse('posts:index'))
+        self.assertIn(
+            post,
+            list(response_second.content.get("page_obj").object_list)
+        ) #КРАШИТСЯ ТУТ
         cache.clear()
-        cleared_cache = self.guest_client.get(reverse('posts:index')).content
-        self.assertNotEqual(cached_content, cleared_cache)
+        response_third = self.authorized_client.get(reverse('posts:index'))
+        self.assertNotIn(
+            post,
+            list(response_third.context.get("page_obj").object_list)
+        )
 
 
 class PaginatorViewsTest(TestCase):
