@@ -264,32 +264,20 @@ class PaginatorViewsTest(TestCase):
             kwargs={'username': f'{self.user.username}'}) + '?page=2')
         self.assertEqual(len(response.context['page_obj']), 3)
 
-
-class CacheTests(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.post = Post.objects.create(
-            author=User.objects.create_user(username='test_name'),
-            text='Cache_text')
-
-    def setUp(self):
-        self.guest_client = Client()
-        self.user = User.objects.create_user(username='nikita')
-        self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)
-
-    def test_cache_index(self):
-        """Тест кэширования страницы index.html"""
-        first_state = self.authorized_client.get(reverse('index'))
-        post_1 = Post.objects.get(pk=1)
-        post_1.text = 'Another_text'
-        post_1.save()
-        second_state = self.authorized_client.get(reverse('index'))
-        self.assertEqual(first_state.content, second_state.content)
+    def test_index_page_cache(self):
+        """Удаленный пост сохраняется в кеше главной страницы."""
+        post = Post.objects.create(
+            text='Test-cache',
+            author=self.post_author,
+            group=self.test_group
+        )
+        page_content = self.guest_client.get(reverse('posts:index')).content
+        post.delete()
+        cached_content = self.guest_client.get(reverse('posts:index')).content
+        self.assertEqual(page_content, cached_content)
         cache.clear()
-        third_state = self.authorized_client.get(reverse('index'))
-        self.assertNotEqual(first_state.content, third_state.content)
+        cleared_cache = self.guest_client.get(reverse('posts:index')).content
+        self.assertNotEqual(cached_content, cleared_cache)
 
 
 class FollowTests(TestCase):
