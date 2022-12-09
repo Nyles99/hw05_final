@@ -263,3 +263,51 @@ class PaginatorViewsTest(TestCase):
             'posts:profile',
             kwargs={'username': f'{self.user.username}'}) + '?page=2')
         self.assertEqual(len(response.context['page_obj']), 3)
+
+
+class CacheTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.post = Post.objects.create(
+            author=User.objects.create_user(username='test_name'),
+            text='Cache_text')
+
+    def setUp(self):
+        self.guest_client = Client()
+        self.user = User.objects.create_user(username='nikita')
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.user)
+
+    def test_cache_index(self):
+        """Тест кэширования страницы index.html"""
+        first_state = self.authorized_client.get(reverse('index'))
+        post_1 = Post.objects.get(pk=1)
+        post_1.text = 'Another_text'
+        post_1.save()
+        second_state = self.authorized_client.get(reverse('index'))
+        self.assertEqual(first_state.content, second_state.content)
+        cache.clear()
+        third_state = self.authorized_client.get(reverse('index'))
+        self.assertNotEqual(first_state.content, third_state.content)
+
+
+class FollowTests(TestCase):
+    def setUp(self):
+        self.client_auth_follower = Client()
+        self.client_auth_following = Client()
+        self.user_follower = User.objects.create_user(username='follower')
+        self.user_following = User.objects.create_user(username='following')
+        self.post = Post.objects.create(
+            author=self.user_following,
+            text='Text_for_comment',
+        )
+        self.client_auth_follower.force_login(self.user_follower)
+        self.client_auth_following.force_login(self.user_following)
+
+        def test_follow(self):
+            self.client_auth_follower.get(reverse('profile_follow',
+                                              kwargs={'username':
+                                                      self.user_following.
+                                                      username}))
+            self.assertEqual(Follow.objects.all().count(), 1)
