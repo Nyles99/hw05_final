@@ -281,14 +281,14 @@ class CacheTests(TestCase):
 
     def test_cache_index(self):
         """Тест кэширования страницы index.html"""
-        first_state = self.authorized_client.get(reverse('index'))
+        first_state = self.authorized_client.get(reverse('posts:index'))
         post_1 = Post.objects.get(pk=1)
         post_1.text = 'Another_text'
         post_1.save()
-        second_state = self.authorized_client.get(reverse('index'))
+        second_state = self.authorized_client.get(reverse('posts:index'))
         self.assertEqual(first_state.content, second_state.content)
         cache.clear()
-        third_state = self.authorized_client.get(reverse('index'))
+        third_state = self.authorized_client.get(reverse('posts;index'))
         self.assertNotEqual(first_state.content, third_state.content)
 
 
@@ -307,7 +307,7 @@ class FollowTests(TestCase):
 
         def test_follow_1(self):
             tem = reverse(
-                'profile_follow',
+                'posts:profile_follow',
                 kwargs={'username': self.user_following.username}
             )
             self.client_auth_follower.get(tem)
