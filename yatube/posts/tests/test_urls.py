@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 
 from posts.models import Group, Post, User
 from django.urls import reverse
+from http import HTTPStatus
 
 User = get_user_model()
 Index = reverse('posts:index')
@@ -86,8 +87,8 @@ class PostModelTest(TestCase):
         for adress in urls:
             with self.subTest(adress=adress):
                 response = self.guest_client.get(adress)
-                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
     def test_comment_authorized(self):
         response = self.authorized_client.get('/comment/')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
