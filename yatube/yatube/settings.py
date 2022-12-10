@@ -148,7 +148,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-CSRF_FAILURE_VIEW = 'posts.views.csrf_failure'
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 
 CACHES = {
     'default': {

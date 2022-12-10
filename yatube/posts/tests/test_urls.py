@@ -13,9 +13,6 @@ Edit_1 = reverse('posts:post_edit', kwargs={'post_id': '1'})
 GRoup = reverse('posts:group_list', kwargs={'slug': 'test-slug'})
 Post_1 = reverse('posts:post_detail', kwargs={'post_id': '1'})
 Post_404 = reverse('posts:post_detail', kwargs={'post_id': '404'})
-ABOUT_A = reverse('about:author')
-ABOUT_T = reverse('about:author')
-# У меня есть вопросы по данному комментарию, написал в Slack
 
 
 class PostModelTest(TestCase):
@@ -51,8 +48,6 @@ class PostModelTest(TestCase):
             [GRoup, self.guest_client, 200],
             [Post_1, self.guest_client, 200],
             [Profile, self.guest_client, 200],
-            [ABOUT_A, self.guest_client, 200],
-            [ABOUT_T, self.guest_client, 200],
             [Edit_1, self.guest_client, 302],
             [Edit_1, self.authorized_client, 200],
             [Create, self.authorized_client, 200],
@@ -72,7 +67,7 @@ class PostModelTest(TestCase):
             Profile: 'posts/profile.html',
             Post_1: 'posts/post_detail.html',
             Edit_1: 'posts/post_create.html',
-            # (f'/posts/{self.post.pk}/comment/'): 'posts/comment.html'
+            # re(f'/posts/{self.post.pk}/comment/'): 'posts/comment.html'
         }
         for adress, template in template_urls_name.items():
             with self.subTest(adress=adress):
