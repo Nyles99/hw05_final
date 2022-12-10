@@ -88,7 +88,7 @@ class PostModelTest(TestCase):
             ('posts:post_delete', (self.post.pk),
                 f'/posts/{self.post.pk}/delete/')
         ]
-        for url, args, link in url_templates_com_and_fol:
-            reverse_name = reverse(url, args=args)
+        for url, kwargs, link in url_templates_com_and_fol:
+            reverse_name = reverse(url, kwargs=kwargs)
             with self.subTest(reverse_name=link):
                 self.assertEqual(reverse_name, link)
