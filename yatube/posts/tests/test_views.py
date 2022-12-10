@@ -302,3 +302,34 @@ class FollowTests(TestCase):
             )
             self.client_auth_follower.get(tem)
             self.assertEqual(Follow.objects.all().count(), 1)
+
+        def test_unfollow(self):
+            """Зарегистрированный пользователь может отписаться."""
+            Follow.objects.create(
+                user=self.user_follower,
+                author=self.user_following
+            )
+            follower_count = Follow.objects.count()
+            self.follower_client.get(reverse(
+                'posts:profile_unfollow',
+                args=(self.user_following.username,)))
+            self.assertEqual(Follow.objects.count(), follower_count - 1)
+
+        def test_add_comment(self):
+            self.client_auth_following.post(
+                f'/following/{self.post.id}/comment',
+                {'text': 'Test comment'},
+                follow=True
+            )
+            response = self.client_auth_following.\
+                get(f'/following/{self.post.id}/')
+            self.assertContains(response, 'Test comment')
+            self.client_auth_following.logout()
+            self.client_auth_following.post(
+                f'/following/{self.post.id}/comment',
+                {'text': 'comment the guest'},
+                follow=True
+            )
+        response = self.client_auth_following.\
+            get(f'/following/{self.post.id}/')
+        self.assertNotContains(response, 'comment the guest')

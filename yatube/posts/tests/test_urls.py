@@ -14,6 +14,7 @@ Post_1 = reverse('posts:post_detail', kwargs={'post_id': '1'})
 Post_404 = reverse('posts:post_detail', kwargs={'post_id': '404'})
 ABOUT_A = reverse('about:author')
 ABOUT_T = reverse('about:author')
+# У меня есть вопросы по данному комментарию, написал в Slack
 
 
 class PostModelTest(TestCase):
@@ -75,3 +76,19 @@ class PostModelTest(TestCase):
             with self.subTest(adress=adress):
                 response = self.authorized_client.get(adress)
                 self.assertTemplateUsed(response, template)
+
+    def test_revers_comment_and_follow(self):
+        url_templates_com_and_fol = [
+            ('posts:profile_unfollow', (self.user.username),
+                f'/profile/{self.user.username}/unfollow/'),
+            ('posts:add_comment', (self.post.pk),
+                f'/posts/{self.post.pk}/comment/'),
+            ('posts:profile_follow', (self.user.username),
+                f'/profile/{self.user.username}/follow/'),
+            ('posts:post_delete', (self.post.pk),
+                f'/posts/{self.post.pk}/delete/')
+        ]
+        for url, args, link in url_templates_com_and_fol:
+            reverse_name = reverse(url, args=args)
+            with self.subTest(reverse_name=link):
+                self.assertEqual(reverse_name, link)
