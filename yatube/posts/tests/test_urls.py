@@ -64,31 +64,30 @@ class PostModelTest(TestCase):
 
     def test_post_url_uses_correct_template(self):
         """Проверка шаблона для адреса ."""
-        template_about_urls_name = {
+        template_urls_name = {
             Index: 'posts/index.html',
             Create: 'posts/post_create.html',
             GRoup: 'posts/group_list.html',
             Profile: 'posts/profile.html',
             Post_1: 'posts/post_detail.html',
             Edit_1: 'posts/post_create.html',
+            f'/posts/{self.post.id}/comment/': 'includes/comment.html'
         }
-        for adress, template in template_about_urls_name.items():
+        for adress, template in template_urls_name.items():
             with self.subTest(adress=adress):
                 response = self.authorized_client.get(adress)
                 self.assertTemplateUsed(response, template)
 
-    def test_revers_comment_and_follow(self):
-        url_templates_com_and_fol = [
-            ('posts:profile_unfollow', (self.user.username),
-                f'/profile/{self.user.username}/unfollow/'),
-            ('posts:add_comment', (self.post.pk),
-                f'/posts/{self.post.pk}/comment/'),
-            ('posts:profile_follow', (self.user.username),
-                f'/profile/{self.user.username}/follow/'),
-            ('posts:post_delete', (self.post.pk),
-                f'/posts/{self.post.pk}/delete/')
-        ]
-        for url, kwargs, link in url_templates_com_and_fol:
-            reverse_name = reverse(url, kwargs=kwargs)
-            with self.subTest(reverse_name=link):
-                self.assertEqual(reverse_name, link)
+    def test_comment_guest(self):
+        urls = (
+            '/comment/',
+            f'/posts/{self.post.id}/comment/',
+        )
+        for adress in urls:
+            with self.subTest(adress=adress):
+                response = self.guest_client.get(adress)
+                self.assertEqual(response.status_code, 304)
+
+    def test_comment_authorized(self):
+        response = self.authorized_client.get('/comment/')
+        self.assertEqual(response.status_code, 200)
