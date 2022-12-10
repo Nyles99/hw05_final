@@ -81,7 +81,6 @@ class PostModelTest(TestCase):
 
     def test_comment_guest(self):
         urls = (
-            '/comment/',
             f'/posts/{self.post.id}/comment/',
         )
         for adress in urls:
@@ -90,5 +89,5 @@ class PostModelTest(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
     def test_comment_authorized(self):
-        response = self.authorized_client.get('/comment/')
+        response = self.authorized_client.get(f'/posts/{self.post.id}/comment/')
         self.assertEqual(response.status_code, HTTPStatus.OK)
