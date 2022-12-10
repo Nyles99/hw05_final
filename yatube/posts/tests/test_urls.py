@@ -89,5 +89,7 @@ class PostModelTest(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
     def test_comment_authorized(self):
-        response = self.authorized_client.get(f'/posts/{self.post.id}/comment/')
+        response = self.authorized_client.get(
+            f'/posts/{self.post.id}/comment/'
+        )
         self.assertEqual(response.status_code, HTTPStatus.OK)
