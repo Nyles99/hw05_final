@@ -67,7 +67,7 @@ class PostModelTest(TestCase):
             Profile: 'posts/profile.html',
             Post_1: 'posts/post_detail.html',
             Edit_1: 'posts/post_create.html',
-            # re(f'/posts/{self.post.pk}/comment/'): 'posts/comment.html'
+            (f'/posts/{self.post.pk}/comment/'): 'posts/comment.html'
         }
         for adress, template in template_urls_name.items():
             with self.subTest(adress=adress):
@@ -87,4 +87,4 @@ class PostModelTest(TestCase):
         response = self.authorized_client.get(
             f'/posts/{self.post.id}/comment/',
         )
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
