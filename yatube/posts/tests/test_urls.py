@@ -92,4 +92,4 @@ class PostModelTest(TestCase):
         response = self.authorized_client.get(
             f'/posts/{self.post.id}/comment/',
         )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
