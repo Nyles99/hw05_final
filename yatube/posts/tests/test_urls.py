@@ -86,7 +86,7 @@ class PostModelTest(TestCase):
         for adress in urls:
             with self.subTest(adress=adress):
                 response = self.guest_client.get(adress)
-                self.assertEqual(response.status_code, 404)
+                self.assertEqual(response.status_code, 302)
 
     def test_comment_authorized(self):
         response = self.authorized_client.get('/comment/')
